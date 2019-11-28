@@ -3,9 +3,9 @@ import org.hamcrest.Matchers;
 
 import static io.restassured.RestAssured.given;
 
-public class DeleteSession {
+class DeleteSession {
 
-    public void deleteSession(String token){
+    void deleteSession(String token, int statusCode){
         Response deleteSession = given()
                 .headers(
                         "X-Session-ID",
@@ -13,7 +13,7 @@ public class DeleteSession {
                 .when()
                 .delete("https://vkplatform.speechpro.com/vksession/rest/session")
                 .then()
-                .statusCode(204)
+                .statusCode(statusCode)
                 .and()
                 .body(Matchers.anything())
                 .extract()

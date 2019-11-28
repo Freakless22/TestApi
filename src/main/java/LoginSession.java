@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.object.HasToString.hasToString;
 
-public class LoginSession {
+class LoginSession {
 
-   public String s;
+   String s;
 
 
-    public void possitiveLoginTest(String username, String domain, String passwd, int statusCode, String reason, String message) {
+    void possitiveLoginTest(String username, String domain, String passwd, int statusCode, String reason, String message) {
 
 
         RequestSpecification request = given();
@@ -43,17 +43,21 @@ public class LoginSession {
         }
     }
 
-    public void badRequestTest(int statusCode){
+    void badRequestTest(int statusCode, String reason){
         RequestSpecification request = given();
         request.baseUri("https://vkplatform.speechpro.com/vksession/");
         request.header("Content-Type", "application/json");
         request.body("{\n" +
-                "  \"username\": " + "\"" + "\",\n" +
-                "  \"domain_id\":" + ",\n" +
-                "  \"password\":" + "\"\n" +
+                "  \"NOTusername\": \"Vk_user\",\n" +
+                "  \"domain_id\": 201,\n" +
+                "  \"password\": \"123\"\n" +
                 "}");
-        request.expect().statusCode(statusCode);
 
-        Response getToken = request.post("/rest/session");
+        request.expect().statusCode(statusCode);
+        request.expect().body("reason", hasToString(reason));
+
+
+       // Response auth = request.post("/rest/session");
+
     }
 }
