@@ -1,79 +1,45 @@
 
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.object.HasToString.hasToString;
-
-public class TestLoginApi {
-
-    private String s;
 
 
-    private void token(){
+public class TestLoginApi extends LoginSession {
 
-        RequestSpecification request = given();
-        request.baseUri("https://vkplatform.speechpro.com/vksession/");
-        request.header("Content-Type", "application/json");
-        request.body("{\n" +
-                "  \"username\": \"Vk_user\",\n" +
-                "  \"domain_id\": 201,\n" +
-                "  \"password\": \"123\"\n" +
-                "}");
-        request.expect().statusCode(200);
-
-        Response response = request.post("/rest/session");
-
-        String regex = "\"session_id\":+ \"(.+?)\"";
-        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-        final Matcher matcher = pattern.matcher(response.getBody().prettyPrint());
-
-        while (matcher.find()) {
-            for (int i = 1; i <= matcher.groupCount(); i++) {
-                s = matcher.group(i);
-            }
-        }
-
-    }
+LoginSession login = new LoginSession();
+CheckSession check = new CheckSession();
+DeleteSession delete = new DeleteSession();
 
     @Test
-    public void loginCheckSession(){
-
-        token();
-        Response response = given()
-                .headers(
-                        "X-Session-ID",
-                        "" + s)
-                .when()
-                .get("https://vkplatform.speechpro.com/vksession/rest/session")
-                .then()
-                .statusCode(200)
-                .and()
-                .body("is_active", hasToString("true"))
-                .extract()
-                .response();
+    public void loginCheckDeletePositiveTest(){
+        login.possitiveLoginTest("Vk_User","201", "123", 200, null, null);
+        check.checkLogin(login.s, "true");
+        delete.deleteSession(login.s);
     }
-
     @Test
-    public void logoutDeleteSession(){
-        token();
-        Response response = given()
-                .headers(
-                        "X-Session-ID",
-                        "" + s)
-                .when()
-                .delete("https://vkplatform.speechpro.com/vksession/rest/session")
-                .then()
-                .statusCode(204)
-                .and()
-                .body(Matchers.anything())
-                .extract()
-                .response();
+    public void incorrectLoginTest(){
+        login.possitiveLoginTest("Vk_User1","201", "123", 401, "USER_NOT_FOUND", "User 'Vk_User1' is not registered in security database.");
+    }
+    @Test
+    public void incorrectPasswordTest(){
+        login.possitiveLoginTest("Vk_User","201", "1234", 401, "INCORRECT_PASSWORD", "Incorrect password.");
+    }
+    @Test
+    public void incorrectDomainTest(){
+        login.possitiveLoginTest("Vk_User","2011", "123", 401, "USER_NOT_FOUND", "User 'Vk_User' is not registered in security database.");
+    }
+    @Test
+    public void badRequestTest(){
+        login.badRequestTest(400);
+    }
+    @Test
+    public void checkDeleteSession() {
+        login.possitiveLoginTest("Vk_User", "201", "123", 200, null, null);
+        delete.deleteSession(login.s);
+        check.checkLogin(login.s, "false");
     }
 
 }
+
+
+
+
