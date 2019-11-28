@@ -15,7 +15,7 @@ public class TestLoginApi extends LoginSession {
         check.checkLogin(login.s, "true", 200);
         delete.deleteSession(login.s, 204);
         check.checkLogin(login.s, "false", 200);
-    } //Авторизуемся, проверяем что сессия жива, удаляем сессию, проверяем что сессия неактивна
+    } //Авторизуемся с корректными данными, проверяем что сессия жива, удаляем сессию, проверяем что сессия неактивна
 
     @Test
     public void incorrectLoginTest(){
@@ -39,13 +39,13 @@ public class TestLoginApi extends LoginSession {
     public void badRequestTest(){
 
         login.badRequestTest(400,"WRONG_JSON");
-    } //отправляем
+    } //отправляем некорректный запрос
 
     @Test
     public void deleteNotActiveSession(){
 
         delete.deleteSession(login.s, 400);
-    }
+    } //удаляем сессию которой нет
 
 }
 
