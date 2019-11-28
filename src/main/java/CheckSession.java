@@ -18,6 +18,5 @@ class CheckSession {
                 .body("is_active", hasToString(isActive))
                 .extract()
                 .response();
-
     }
 }

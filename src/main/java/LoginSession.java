@@ -11,7 +11,6 @@ class LoginSession {
 
    String s;
 
-
     void possitiveLoginTest(String username, String domain, String passwd, int statusCode, String reason, String message) {
 
 
