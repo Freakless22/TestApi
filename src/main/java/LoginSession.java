@@ -10,21 +10,60 @@ import static org.hamcrest.object.HasToString.hasToString;
 class LoginSession {
 
    String s;
+   private String username;
+   private String domain;
+   private String password;
 
-    void possitiveLoginTest(String username, String domain, String passwd, int statusCode, String reason, String message) {
 
 
+    private int statusCode;
+   String userNotFoundReason = "USER_NOT_FOUND";
+   String nullArgumentReason = "ILLEGAL_ARGUMENT";
+   String incorrectPasswordReason = "INCORRECT_PASSWORD";
+   String wrongJsonReason = "WRONG_JSON";
+
+    int getStatusCode() {
+        return statusCode;
+    }
+
+    void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    void setUsername(String username) {
+        this.username = username;
+    }
+
+    String getUsername() {
+        return username;
+    }
+
+    void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    String getDomain() {
+        return domain;
+    }
+
+    void setPassword(String password){
+        this.password = password;
+    }
+    String getPassword(){
+        return password;
+    }
+
+    void baseLoginTest(String username, String domain, String password, int statusCode, String reason, String message) {
         RequestSpecification request = given();
         request.baseUri("https://vkplatform.speechpro.com/vksession/");
         request.header("Content-Type", "application/json");
         request.body("{\n" +
                 "  \"username\": " + "\"" + username + "\",\n" +
                 "  \"domain_id\":" + domain + ",\n" +
-                "  \"password\":" + "\"" + passwd + "\"\n" +
+                "  \"password\":" + "\"" + password + "\"\n" +
                 "}");
         request.expect().statusCode(statusCode);
-
-        if(statusCode == 401) {
+        if (statusCode != 200) {
             request.expect().body("reason", hasToString(reason));
             request.expect().body("message", hasToString(message));
         }
@@ -40,23 +79,8 @@ class LoginSession {
                 s = matcher.group(i);
             }
         }
-    }
-
-    void badRequestTest(int statusCode, String reason){
-        RequestSpecification request = given();
-        request.baseUri("https://vkplatform.speechpro.com/vksession/");
-        request.header("Content-Type", "application/json");
-        request.body("{\n" +
-                "  \"NOTusername\": \"Vk_user\",\n" +
-                "  \"domain_id\": 201,\n" +
-                "  \"password\": \"123\"\n" +
-                "}");
-
-        request.expect().statusCode(statusCode);
-        request.expect().body("reason", hasToString(reason));
-
-
-       // Response auth = request.post("/rest/session");
 
     }
-}
+
+
+    }

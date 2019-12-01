@@ -5,6 +5,7 @@ import static org.hamcrest.object.HasToString.hasToString;
 
 class CheckSession {
 
+
     void checkLogin(String token, String isActive, int statusCode) {
         Response checkLogin = given()
                 .headers(
@@ -18,5 +19,6 @@ class CheckSession {
                 .body("is_active", hasToString(isActive))
                 .extract()
                 .response();
+
     }
 }
